@@ -1,0 +1,370 @@
+import { NextResponse } from "next/server"
+
+// 模拟数据 - 增加更多记录以便测试分页和图表
+const mockData = {
+  customers: {
+    total: 15,
+    records: [
+      {
+        id: "1",
+        name: "张三",
+        company: "ABC科技",
+        email: "zhangsan@example.com",
+        phone: "13800000001",
+        status: "活跃",
+        region: "华东",
+        revenue: 5000000,
+        employees: 120,
+        joinDate: "2020-01-15",
+      },
+      {
+        id: "2",
+        name: "李四",
+        company: "XYZ科技",
+        email: "lisi@example.com",
+        phone: "13800000002",
+        status: "潜在",
+        region: "华南",
+        revenue: 3000000,
+        employees: 80,
+        joinDate: "2020-03-22",
+      },
+      {
+        id: "3",
+        name: "王五",
+        company: "DEF科技",
+        email: "wangwu@example.com",
+        phone: "13800000003",
+        status: "活跃",
+        region: "华北",
+        revenue: 8000000,
+        employees: 200,
+        joinDate: "2019-11-05",
+      },
+      {
+        id: "4",
+        name: "赵六",
+        company: "GHI科技",
+        email: "zhaoliu@example.com",
+        phone: "13800000004",
+        status: "非活跃",
+        region: "西南",
+        revenue: 2000000,
+        employees: 50,
+        joinDate: "2021-02-18",
+      },
+      {
+        id: "5",
+        name: "钱七",
+        company: "JKL科技",
+        email: "qianqi@example.com",
+        phone: "13800000005",
+        status: "活跃",
+        region: "华东",
+        revenue: 6000000,
+        employees: 150,
+        joinDate: "2019-07-30",
+      },
+      {
+        id: "6",
+        name: "孙八",
+        company: "MNO科技",
+        email: "sunba@example.com",
+        phone: "13800000006",
+        status: "潜在",
+        region: "华南",
+        revenue: 4000000,
+        employees: 100,
+        joinDate: "2020-09-12",
+      },
+      {
+        id: "7",
+        name: "周九",
+        company: "PQR科技",
+        email: "zhoujiu@example.com",
+        phone: "13800000007",
+        status: "活跃",
+        region: "华北",
+        revenue: 7000000,
+        employees: 180,
+        joinDate: "2019-05-20",
+      },
+      {
+        id: "8",
+        name: "吴十",
+        company: "STU科技",
+        email: "wushi@example.com",
+        phone: "13800000008",
+        status: "非活跃",
+        region: "西南",
+        revenue: 1500000,
+        employees: 40,
+        joinDate: "2021-04-25",
+      },
+      {
+        id: "9",
+        name: "郑十一",
+        company: "VWX科技",
+        email: "zhengshiyi@example.com",
+        phone: "13800000009",
+        status: "活跃",
+        region: "华东",
+        revenue: 9000000,
+        employees: 220,
+        joinDate: "2018-12-10",
+      },
+      {
+        id: "10",
+        name: "王十二",
+        company: "YZA科技",
+        email: "wangshier@example.com",
+        phone: "13800000010",
+        status: "潜在",
+        region: "华南",
+        revenue: 3500000,
+        employees: 90,
+        joinDate: "2020-06-15",
+      },
+      {
+        id: "11",
+        name: "李十三",
+        company: "BCD科技",
+        email: "lishisan@example.com",
+        phone: "13800000011",
+        status: "活跃",
+        region: "华北",
+        revenue: 6500000,
+        employees: 160,
+        joinDate: "2019-08-05",
+      },
+      {
+        id: "12",
+        name: "赵十四",
+        company: "EFG科技",
+        email: "zhaoshisi@example.com",
+        phone: "13800000012",
+        status: "非活跃",
+        region: "西南",
+        revenue: 1800000,
+        employees: 45,
+        joinDate: "2021-01-20",
+      },
+      {
+        id: "13",
+        name: "钱十五",
+        company: "HIJ科技",
+        email: "qianshiwu@example.com",
+        phone: "13800000013",
+        status: "活跃",
+        region: "华东",
+        revenue: 7500000,
+        employees: 190,
+        joinDate: "2019-03-15",
+      },
+      {
+        id: "14",
+        name: "孙十六",
+        company: "KLM科技",
+        email: "sunshiliu@example.com",
+        phone: "13800000014",
+        status: "潜在",
+        region: "华南",
+        revenue: 4200000,
+        employees: 110,
+        joinDate: "2020-04-28",
+      },
+      {
+        id: "15",
+        name: "周十七",
+        company: "NOP科技",
+        email: "zhoushiqi@example.com",
+        phone: "13800000015",
+        status: "活跃",
+        region: "华北",
+        revenue: 8200000,
+        employees: 210,
+        joinDate: "2019-01-10",
+      },
+    ],
+  },
+  opportunities: {
+    total: 12,
+    records: [
+      {
+        id: "1",
+        name: "企业网站开发",
+        customer: "ABC科技",
+        value: 50000,
+        stage: "初步接触",
+        probability: 30,
+        expectedCloseDate: "2023-06-30",
+        source: "网站咨询",
+        owner: "张经理",
+      },
+      {
+        id: "2",
+        name: "移动应用开发",
+        customer: "XYZ科技",
+        value: 120000,
+        stage: "需求分析",
+        probability: 50,
+        expectedCloseDate: "2023-07-15",
+        source: "老客户推荐",
+        owner: "李经理",
+      },
+      {
+        id: "3",
+        name: "系统集成项目",
+        customer: "DEF科技",
+        value: 200000,
+        stage: "方案确认",
+        probability: 70,
+        expectedCloseDate: "2023-05-20",
+        source: "展会",
+        owner: "王经理",
+      },
+      {
+        id: "4",
+        name: "数据分析平台",
+        customer: "GHI科技",
+        value: 80000,
+        stage: "商务谈判",
+        probability: 90,
+        expectedCloseDate: "2023-04-10",
+        source: "网站咨询",
+        owner: "赵经理",
+      },
+      {
+        id: "5",
+        name: "云服务迁移",
+        customer: "JKL科技",
+        value: 150000,
+        stage: "初步接触",
+        probability: 20,
+        expectedCloseDate: "2023-08-05",
+        source: "电话营销",
+        owner: "张经理",
+      },
+      {
+        id: "6",
+        name: "IT基础设施升级",
+        customer: "MNO科技",
+        value: 300000,
+        stage: "需求分析",
+        probability: 40,
+        expectedCloseDate: "2023-07-25",
+        source: "老客户推荐",
+        owner: "李经理",
+      },
+      {
+        id: "7",
+        name: "安全审计服务",
+        customer: "PQR科技",
+        value: 75000,
+        stage: "方案确认",
+        probability: 60,
+        expectedCloseDate: "2023-06-15",
+        source: "展会",
+        owner: "王经理",
+      },
+      {
+        id: "8",
+        name: "人工智能解决方案",
+        customer: "STU科技",
+        value: 250000,
+        stage: "商务谈判",
+        probability: 80,
+        expectedCloseDate: "2023-05-10",
+        source: "网站咨询",
+        owner: "赵经理",
+      },
+      {
+        id: "9",
+        name: "区块链应用开发",
+        customer: "VWX科技",
+        value: 180000,
+        stage: "初步接触",
+        probability: 25,
+        expectedCloseDate: "2023-08-20",
+        source: "电话营销",
+        owner: "张经理",
+      },
+      {
+        id: "10",
+        name: "物联网平台构建",
+        customer: "YZA科技",
+        value: 220000,
+        stage: "需求分析",
+        probability: 45,
+        expectedCloseDate: "2023-07-30",
+        source: "老客户推荐",
+        owner: "李经理",
+      },
+      {
+        id: "11",
+        name: "大数据分析工具",
+        customer: "BCD科技",
+        value: 130000,
+        stage: "方案确认",
+        probability: 65,
+        expectedCloseDate: "2023-06-25",
+        source: "展会",
+        owner: "王经理",
+      },
+      {
+        id: "12",
+        name: "企业内部系统开发",
+        customer: "EFG科技",
+        value: 170000,
+        stage: "商务谈判",
+        probability: 85,
+        expectedCloseDate: "2023-05-15",
+        source: "网站咨询",
+        owner: "赵经理",
+      },
+    ],
+  },
+}
+
+export async function GET(request: Request, { params }: { params: { worksheetId: string } }) {
+  try {
+    const { worksheetId } = params
+    const { searchParams } = new URL(request.url)
+
+    // 获取分页参数
+    const page = Number.parseInt(searchParams.get("page") || "1", 10)
+    const pageSize = Number.parseInt(searchParams.get("pageSize") || "10", 10)
+    const search = searchParams.get("search")
+
+    // 检查是否有模拟数据
+    if (!mockData[worksheetId]) {
+      return NextResponse.json({ message: `未找到工作表: ${worksheetId}` }, { status: 404 })
+    }
+
+    let records = [...mockData[worksheetId].records]
+    const total = records.length
+
+    // 如果有搜索参数，过滤记录
+    if (search) {
+      records = records.filter((record) =>
+        Object.values(record).some((value) => value && value.toString().toLowerCase().includes(search.toLowerCase())),
+      )
+    }
+
+    // 计算分页
+    const startIndex = (page - 1) * pageSize
+    const endIndex = startIndex + pageSize
+    const paginatedRecords = records.slice(startIndex, endIndex)
+
+    return NextResponse.json({
+      total: records.length,
+      page,
+      pageSize,
+      totalPages: Math.ceil(records.length / pageSize),
+      records: paginatedRecords,
+    })
+  } catch (error) {
+    console.error("API错误:", error)
+    return NextResponse.json({ message: "服务器错误", error: error.message }, { status: 500 })
+  }
+}
